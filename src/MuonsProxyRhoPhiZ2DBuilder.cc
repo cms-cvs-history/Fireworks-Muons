@@ -71,13 +71,19 @@ void MuonsProxyRhoPhiZ2DBuilder::build(const FWEventItem* iItem,
    //muons.getByLabel(*iEvent,"trackerMuons");
    
    if(0 == muons ) return;
+   bool reco = true;
    
    // if auto field estimation mode, do extra loop over muons.
    if ( CmsShowMain::isAutoField() )
      for ( reco::MuonCollection::const_iterator muon = muons->begin(); 
 	   muon != muons->end(); ++muon) {
-	if ( fabs( muon->eta() ) > 2.0 || muon->pt() < 3 || 
-	     !muon->standAloneMuon().isAvailable()) continue;
+	try { 
+	   reco &= muon->standAloneMuon()->extra().isAvailable(); 
+	}
+	catch (cms::Exception& e) { reco = false; }
+	     
+	if (!reco) break;
+	if ( fabs( muon->eta() ) > 2.0 || muon->pt() < 3 ) continue;
 	double estimate = fw::estimate_field(*(muon->standAloneMuon()));
 	if ( estimate < 0 ) continue;
 	CmsShowMain::guessFieldIsOn( estimate > 0.5 );
@@ -127,9 +133,7 @@ void MuonsProxyRhoPhiZ2DBuilder::build(const FWEventItem* iItem,
 	muonList->SetRnrSelf(     iItem->defaultDisplayProperties().isVisible() );
 	muonList->SetRnrChildren( iItem->defaultDisplayProperties().isVisible() );
 	
-	bool useStandAloneFit = ! muon->isMatchesValid() && 
-	  muon->standAloneMuon().isAvailable() && 
-	  muon->standAloneMuon()->extra().isAvailable();
+	bool useStandAloneFit = ! muon->isMatchesValid() && reco;
 	
 	if ( ! useStandAloneFit && buggyMuon( &*muon, iItem->getGeom() ) ) 
 	  useStandAloneFit = true;
@@ -153,7 +157,7 @@ void MuonsProxyRhoPhiZ2DBuilder::build(const FWEventItem* iItem,
 	      trk->MakeTrack();
 	      muonList->AddElement( trk );
 	      
-	      if ( muon->track()->extra().isAvailable() ) {
+	      if ( reco ) {
 		 outerRecTrack.fP = TEveVector( -muon->track()->innerMomentum().x(),
 						-muon->track()->innerMomentum().y(),
 						-muon->track()->innerMomentum().z() );
@@ -178,7 +182,8 @@ void MuonsProxyRhoPhiZ2DBuilder::build(const FWEventItem* iItem,
 	      // change type of the last point to daughter
 	      // and set last points
 	      // change last pathmark type
-	      trk->RefPathMarks().back().fType = TEvePathMark::kDaughter;
+	      if ( !trk->RefPathMarks().empty()) 
+		trk->RefPathMarks().back().fType = TEvePathMark::kDaughter;
 	      if ( useStandAloneFit ) {
 		 TEvePathMark mark( TEvePathMark::kDecay );
 		 if (  muon->standAloneMuon()->innerPosition().R() >  
@@ -195,10 +200,12 @@ void MuonsProxyRhoPhiZ2DBuilder::build(const FWEventItem* iItem,
 		 }
 		 trk->AddPathMark( mark );
 	      } else {
-		 // muon match info
-		 TEvePathMark mark( TEvePathMark::kDecay );
-		 mark.fV = firstMatch( &*muon, iItem );
-		 trk->AddPathMark( mark );
+		 if ( muon->isTrackerMuon() ) {
+		    // muon match info
+		    TEvePathMark mark( TEvePathMark::kDecay );
+		    mark.fV = firstMatch( &*muon, iItem );
+		    trk->AddPathMark( mark );
+		 }
 	      }
 	      trk->SetPropagator( innerPropagator );
 	      trk->MakeTrack();
@@ -231,6 +238,7 @@ void MuonsProxyRhoPhiZ2DBuilder::build(const FWEventItem* iItem,
 	   outerTrack->RefPathMarks().back().fType = TEvePathMark::kDecay;
 	   outerTrack->MakeTrack();
 	   muonList->AddElement( outerTrack );
+	   continue;
 	}
 
 	if ( useStandAloneFit )
@@ -287,7 +295,15 @@ void MuonsProxyRhoPhiZ2DBuilder::build(const FWEventItem* iItem,
 	     
 	     outerTrack->MakeTrack();
 	     muonList->AddElement( outerTrack );
+	     continue;
 	  }
+	// case of global muons in old AOD
+	outerRecTrack.fSign = innerRecTrack.fSign;
+	TEveTrack* outerTrack = new TEveTrack( &outerRecTrack, outerPropagator );
+	outerTrack->SetMainColor( iItem->defaultDisplayProperties().color() );
+	outerTrack->MakeTrack();
+	muonList->AddElement( outerTrack );
+
      }
 }
 
@@ -298,11 +314,12 @@ TEveVector MuonsProxyRhoPhiZ2DBuilder::muonLocation( const reco::Muon* muon,
 {
    
    // stand alone information
-   if (muon->standAloneMuon().isAvailable() &&
-       muon->standAloneMuon()->extra().isAvailable() )
-     return TEveVector ( muon->standAloneMuon()->innerPosition().x(),
-			 muon->standAloneMuon()->innerPosition().y(),
-			 muon->standAloneMuon()->innerPosition().z() );
+   try {
+      return TEveVector ( muon->standAloneMuon()->innerPosition().x(),
+			  muon->standAloneMuon()->innerPosition().y(),
+			  muon->standAloneMuon()->innerPosition().z() );
+   } catch (cms::Exception& e){}
+   
    // tracker muon info
    TEveVector v = firstMatch( muon, iItem );
    if (v.Mag()>0) 
@@ -316,7 +333,7 @@ TEveVector MuonsProxyRhoPhiZ2DBuilder::firstMatch( const reco::Muon* muon,
 						   const FWEventItem* iItem )
 {
    const DetIdToMatrix* geom = iItem->getGeom();
-   const std::vector<reco::MuonChamberMatch>& matches = muon->matches();
+   const std::vector<reco::MuonChamberMatch>& matches = muon->getMatches();
    Double_t localTrajectoryPoint[3];
    Double_t globalTrajectoryPoint[3];
    std::vector<reco::MuonChamberMatch>::const_iterator chamber = matches.begin();
@@ -346,7 +363,7 @@ void MuonsProxyRhoPhiZ2DBuilder::addMatchInformation( const reco::Muon* muon,
 						      bool tracksOnly)
 {
    const DetIdToMatrix* geom = iItem->getGeom();
-   const std::vector<reco::MuonChamberMatch>& matches = muon->matches();
+   const std::vector<reco::MuonChamberMatch>& matches = muon->getMatches();
    Double_t localTrajectoryPoint[3];
    Double_t globalTrajectoryPoint[3];
    //need to use auto_ptr since the segmentSet may not be passed to muonList
@@ -465,27 +482,5 @@ void MuonsProxyRhoPhiZ2DBuilder::addHitsAsPathMarks( const reco::TrackExtra* rec
 bool MuonsProxyRhoPhiZ2DBuilder::buggyMuon( const reco::Muon* muon,
 					    const DetIdToMatrix* geom )
 {
-   if (! muon->standAloneMuon().isAvailable() ||
-       ! muon->standAloneMuon()->extra().isAvailable() ) return false;
-   const std::vector<reco::MuonChamberMatch>& matches = muon->matches();
-   Double_t localTrajectoryPoint[3];
-   Double_t globalTrajectoryPoint[3];
-   std::vector<reco::MuonChamberMatch>::const_iterator chamber = matches.begin();
-   for ( ; chamber != matches.end(); ++ chamber )
-     {
-	// expected track position
-	localTrajectoryPoint[0] = chamber->x;
-	localTrajectoryPoint[1] = chamber->y;
-	localTrajectoryPoint[2] = 0;
-	     
-	DetId id = chamber->id;
-	const TGeoHMatrix* matrix = geom->getMatrix( chamber->id.rawId() );
-	if ( matrix ) {
-	   matrix->LocalToMaster( localTrajectoryPoint, globalTrajectoryPoint );
-	   double phi = atan2(globalTrajectoryPoint[1],globalTrajectoryPoint[0]);
-	   if ( cos( phi - muon->standAloneMuon()->innerPosition().phi()) < 0 )
-	     return true;
-	}
-     }
    return false;
 }

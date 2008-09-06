@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: MuonsProxyEveLegoBuilder.cc,v 1.3 2008/07/16 21:29:22 dmytro Exp $
+// $Id: MuonsProxyEveLegoBuilder.cc,v 1.4 2008/07/17 10:04:18 dmytro Exp $
 //
 
 // system include files
@@ -74,7 +74,7 @@ MuonsProxyEveLegoBuilder::build(const FWEventItem* iItem, TEveElementList** prod
    const reco::MuonCollection* muons=0;
    iItem->get(muons);
    if(0 == muons ) return;
-   
+   bool reco = true;
    fw::NamedCounter counter("moun");
    for ( reco::MuonCollection::const_iterator muon = muons->begin(); 
 	 muon != muons->end(); ++muon, ++counter )
@@ -93,26 +93,37 @@ MuonsProxyEveLegoBuilder::build(const FWEventItem* iItem, TEveElementList** prod
 	points->IncDenyDestroy();
 	points->SetMarkerStyle(2);
 	points->SetMarkerSize(0.2);
-	if ( muon->track().isAvailable() ) {
-	   // get position of the muon at surface of the tracker
-	   points->SetNextPoint(muon->track()->outerPosition().eta(),
-				muon->track()->outerPosition().phi(),
-				0.1);
-	} else {
-	   if ( muon->standAloneMuon().isAvailable() ) {
-	      // get position of the inner state of the stand alone muon
-	      if (  muon->standAloneMuon()->innerPosition().R() <  muon->standAloneMuon()->outerPosition().R() )
-		points->SetNextPoint(muon->standAloneMuon()->innerPosition().eta(),
-				     muon->standAloneMuon()->innerPosition().phi(),
-				     0.1);
-	      else
-		points->SetNextPoint(muon->standAloneMuon()->outerPosition().eta(),
-				     muon->standAloneMuon()->outerPosition().phi(),
-				     0.1);
-	   } else {
-	      // WARNING: use direction at POCA as the last option
-	      points->SetNextPoint(muon->eta(),muon->phi(),0.1);
+	if ( reco ) {
+	   try { 
+	      reco &= muon->track()->extra().isAvailable(); 
+	      reco &= muon->standAloneMuon()->extra().isAvailable(); 
+	   } catch ( cms::Exception& e ) {
+	      reco = false;
 	   }
+	}
+	
+	if ( reco ) {	
+	   if ( muon->track().isAvailable() ) {
+	      // get position of the muon at surface of the tracker
+	      points->SetNextPoint(muon->track()->outerPosition().eta(),
+				   muon->track()->outerPosition().phi(),
+				   0.1);
+	   } else {
+	      if ( muon->standAloneMuon().isAvailable() ) {
+		 // get position of the inner state of the stand alone muon
+		 if (  muon->standAloneMuon()->innerPosition().R() <  muon->standAloneMuon()->outerPosition().R() )
+		   points->SetNextPoint(muon->standAloneMuon()->innerPosition().eta(),
+					muon->standAloneMuon()->innerPosition().phi(),
+					0.1);
+		 else
+		   points->SetNextPoint(muon->standAloneMuon()->outerPosition().eta(),
+					muon->standAloneMuon()->outerPosition().phi(),
+					0.1);
+	      }
+	   }
+	} else {
+	   // WARNING: use direction at POCA as the last option
+	   points->SetNextPoint(muon->eta(),muon->phi(),0.1);
 	}
 	points->SetMarkerColor(  iItem->defaultDisplayProperties().color() );
 	// muonList->AddElement( points );
