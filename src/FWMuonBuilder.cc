@@ -2,7 +2,7 @@
 //
 // Package:     Muons
 // Class  :     FWMuonBuilder
-// $Id: FWMuonBuilder.cc,v 1.15 2010/01/21 21:02:13 amraktad Exp $
+// $Id: FWMuonBuilder.cc,v 1.16 2010/01/22 19:54:13 amraktad Exp $
 //
 
 // system include files
@@ -230,6 +230,7 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
                                                iItem->defaultDisplayProperties().color(),
                                                getRecoTrajectoryPoints(muon,iItem) );
       trk->MakeTrack();
+      trk->SetLineWidth(3);
       tList->AddElement( trk );
       if ( ! tracksOnly )
 	 addMatchInformation( &(*muon), iItem, tList, showEndcap );
@@ -261,6 +262,7 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
                                                iItem->defaultDisplayProperties().color(),
                                                extraPoints);
       trk->MakeTrack();
+      trk->SetLineWidth(3);
       tList->AddElement( trk );
       return;
    }
@@ -271,6 +273,7 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
                                                m_trackerPropagator.get(),
                                                iItem->defaultDisplayProperties().color());
       trk->MakeTrack();
+      trk->SetLineWidth(3);
       tList->AddElement( trk );
       return;
    }
@@ -281,6 +284,7 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
                                                m_trackerPropagator.get(),
                                                iItem->defaultDisplayProperties().color());
       trk->MakeTrack();
+      trk->SetLineWidth(3);
       tList->AddElement( trk );
       return;
    }
@@ -291,5 +295,6 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
 					    m_trackerPropagator.get(),
 					    iItem->defaultDisplayProperties().color());
    trk->MakeTrack();
+   trk->SetLineWidth(3);
    tList->AddElement( trk );
 }
