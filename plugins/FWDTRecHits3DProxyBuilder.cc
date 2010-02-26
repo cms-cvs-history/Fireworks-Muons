@@ -80,6 +80,9 @@ FWDTRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pro
       for(DTRecHitCollection::const_iterator it = range.first;
 	  it != range.second; ++it)
       {
+	 Double_t localPos[3] = {(*it).localPosition().x(), (*it).localPosition().y(), (*it).localPosition().z()};
+	 Double_t globalPos[3];
+	 
 	 const DTRecHit1D* lrechit = (*it).componentRecHit(Left);
          const DTRecHit1D* rrechit = (*it).componentRecHit(Right);
 
@@ -92,9 +95,13 @@ FWDTRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pro
          matrix->LocalToMaster(lLocalPos, lGlobalPoint);
          matrix->LocalToMaster(rLocalPos, rGlobalPoint);
          matrix->LocalToMaster(localCenterPoint, globalCenterPoint);
+         matrix->LocalToMaster(localPos, globalPos);
+	 
 	 rechitSet->AddLine(lGlobalPoint[0], lGlobalPoint[1], lGlobalPoint[2], rGlobalPoint[0], rGlobalPoint[1], rGlobalPoint[2]);
 	 rechitSet->AddLine(globalCenterPoint[0], globalCenterPoint[1], globalCenterPoint[2], rGlobalPoint[0], rGlobalPoint[1], rGlobalPoint[2]);
 	 rechitSet->AddLine(lGlobalPoint[0], lGlobalPoint[1], lGlobalPoint[2], globalCenterPoint[0], globalCenterPoint[1], globalCenterPoint[2]);
+
+	 rechitSet->AddLine(globalPos[0], globalPos[1], globalPos[2], globalCenterPoint[0], globalCenterPoint[1], globalCenterPoint[2]);
       }
    }
    tList->AddElement(compund);

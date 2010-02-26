@@ -65,20 +65,24 @@ FWCSCRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pr
    for(CSCRecHit2DCollection::id_iterator chId = collection->id_begin(), chIdEnd = collection->id_end();
        chId != chIdEnd; ++chId, ++index)
    {
+      // FIXME: We do not have layer geometry, take the chamber instead: 
       const TGeoHMatrix* matrix = iItem->getGeom()->getMatrix((*chId).chamberId());
       if(!matrix) {
          std::cout << "ERROR: failed get geometry of CSC chamber with det id: " <<
          (*chId).chamberId() << std::endl;
          continue;
       }
-      
+
       CSCRecHit2DCollection::range range = collection->get(*chId);
       for(CSCRecHit2DCollection::const_iterator it = range.first;
 	  it != range.second; ++it)
       {
 	 Float_t x = it->localPosition().x();
 	 Float_t y = it->localPosition().y();
-	 Float_t z = it->localPosition().z();
+	 // Local Z is the center of the chamber, e.g. 0
+	 // FIXME: we'll estimate a layer center relative to
+	 // the chamber center (see Muon TDR p.154):
+	 Float_t z = 9.175 - ((*chId).layer() - 1)*3.492;
 	 Float_t dx = sqrt(it->localPositionError().xx());
 	 Float_t dy = sqrt(it->localPositionError().yy());
 
