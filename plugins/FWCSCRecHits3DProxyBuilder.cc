@@ -82,7 +82,11 @@ FWCSCRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pr
 	 // Local Z is the center of the chamber, e.g. 0
 	 // FIXME: we'll estimate a layer center relative to
 	 // the chamber center (see Muon TDR p.154):
-	 Float_t z = 9.175 - ((*chId).layer() - 1)*3.492;
+	 // FIXME: Layer offsets for all chambers except ME11
+	 // are the same. These nubers are taken from DDD.
+	 Float_t z = 6.17909 - ((*chId).layer() - 1)*2.54;
+	 // ME11:
+	 // Float_t z = 5.67014 - ((*chId).layer() - 1)*2.2;
 	 Float_t dx = sqrt(it->localPositionError().xx());
 	 Float_t dy = sqrt(it->localPositionError().yy());
 
@@ -90,25 +94,18 @@ FWCSCRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pr
          Double_t localU2Point[3] = {x + dx, y, z};
          Double_t localV1Point[3] = {x, y - dy, z};
          Double_t localV2Point[3] = {x, y + dy, z};
-         Double_t localW1Point[3] = {x, y, z};
-         Double_t localW2Point[3] = {x, y, z};
 
          Double_t globalU1Point[3];
          Double_t globalU2Point[3];
          Double_t globalV1Point[3];
          Double_t globalV2Point[3];
-         Double_t globalW1Point[3];
-         Double_t globalW2Point[3];
 
          matrix->LocalToMaster(localU1Point, globalU1Point);
          matrix->LocalToMaster(localU2Point, globalU2Point);
          matrix->LocalToMaster(localV1Point, globalV1Point);
          matrix->LocalToMaster(localV2Point, globalV2Point);
-         matrix->LocalToMaster(localW1Point, globalW1Point);
-         matrix->LocalToMaster(localW2Point, globalW2Point);
 	 rechitSet->AddLine(globalU1Point[0], globalU1Point[1], globalU1Point[2], globalU2Point[0], globalU2Point[1], globalU2Point[2]);
 	 rechitSet->AddLine(globalV1Point[0], globalV1Point[1], globalV1Point[2], globalV2Point[0], globalV2Point[1], globalV2Point[2]);
-	 rechitSet->AddLine(globalW1Point[0], globalW1Point[1], globalW1Point[2], globalW2Point[0], globalW2Point[1], globalW2Point[2]);
       }
    }
    tList->AddElement(compund);
