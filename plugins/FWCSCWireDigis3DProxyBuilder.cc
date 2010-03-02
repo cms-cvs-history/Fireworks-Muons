@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCWireDigis3DProxyBuilder.cc,v 1.2 2010/02/26 10:28:40 mccauley Exp $
+// $Id: FWCSCWireDigis3DProxyBuilder.cc,v 1.1.2.1 2010/03/02 13:12:41 mccauley Exp $
 //
 
 #include "TEveManager.h"
@@ -84,6 +84,7 @@ FWCSCWireDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** 
     const CSCDetId& cscDetId = (*dri).first;
     const CSCWireDigiCollection::Range& range = (*dri).second;
  
+    /*
     const TGeoHMatrix* matrix = iItem->getGeom()->getMatrix(cscDetId.rawId());
     
     if ( ! matrix )
@@ -92,6 +93,7 @@ FWCSCWireDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** 
                << cscDetId.rawId() <<std::endl;
       continue;
     }
+    */
     
     std::stringstream s;
     s << "wire "<< index;
