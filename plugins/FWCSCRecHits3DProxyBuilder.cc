@@ -65,11 +65,10 @@ FWCSCRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pr
    for(CSCRecHit2DCollection::id_iterator chId = collection->id_begin(), chIdEnd = collection->id_end();
        chId != chIdEnd; ++chId, ++index)
    {
-      // FIXME: We do not have layer geometry, take the chamber instead: 
-      const TGeoHMatrix* matrix = iItem->getGeom()->getMatrix((*chId).chamberId());
+      const TGeoHMatrix* matrix = iItem->getGeom()->getMatrix(*chId);
       if(!matrix) {
-         std::cout << "ERROR: failed get geometry of CSC chamber with det id: " <<
-         (*chId).chamberId() << std::endl;
+         std::cout << "ERROR: failed get geometry of CSC layer with det id: " <<
+	   (*chId) << std::endl;
          continue;
       }
 
@@ -79,14 +78,7 @@ FWCSCRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pr
       {
 	 Float_t x = it->localPosition().x();
 	 Float_t y = it->localPosition().y();
-	 // Local Z is the center of the chamber, e.g. 0
-	 // FIXME: we'll estimate a layer center relative to
-	 // the chamber center (see Muon TDR p.154):
-	 // FIXME: Layer offsets for all chambers except ME11
-	 // are the same. These nubers are taken from DDD.
-	 Float_t z = 6.17909 - ((*chId).layer() - 1)*2.54;
-	 // ME11:
-	 // Float_t z = 5.67014 - ((*chId).layer() - 1)*2.2;
+	 Float_t z = 0.0;
 	 Float_t dx = sqrt(it->localPositionError().xx());
 	 Float_t dy = sqrt(it->localPositionError().yy());
 
