@@ -57,7 +57,6 @@ FWDTRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pro
    TEveCompound* compund = new TEveCompound("dt compound", "dtRechits");
    compund->OpenCompound();
    TEveStraightLineSet* rechitSet = new TEveStraightLineSet("DT RecHit Collection");
-   rechitSet->SetLineWidth(3);
    rechitSet->SetMainColor(iItem->defaultDisplayProperties().color());
    rechitSet->SetRnrSelf(iItem->defaultDisplayProperties().isVisible());
    rechitSet->SetRnrChildren(iItem->defaultDisplayProperties().isVisible());

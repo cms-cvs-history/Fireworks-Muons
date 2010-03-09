@@ -8,7 +8,7 @@
 //
 // Original Author:
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWDTSegments3DProxyBuilder.cc,v 1.1 2009/05/14 Yanjun Tu Exp $
+// $Id: FWDTSegments3DProxyBuilder.cc,v 1.1 2009/05/14 20:29:26 yanjuntu Exp $
 //
 
 // system include files
@@ -100,7 +100,6 @@ FWDTSegments3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pr
       TEvePointSet* pointSet = new TEvePointSet();
       pointSet->SetMarkerStyle(2);
       pointSet->SetMarkerSize(3);
-      segmentSet->SetLineWidth(3);
       segmentSet->SetMainColor(iItem->defaultDisplayProperties().color());
       segmentSet->SetRnrSelf(iItem->defaultDisplayProperties().isVisible());
       segmentSet->SetRnrChildren(iItem->defaultDisplayProperties().isVisible());

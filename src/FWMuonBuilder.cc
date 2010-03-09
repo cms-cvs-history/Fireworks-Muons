@@ -2,7 +2,7 @@
 //
 // Package:     Muons
 // Class  :     FWMuonBuilder
-// $Id: FWMuonBuilder.cc,v 1.16 2010/01/22 19:54:13 amraktad Exp $
+// $Id: FWMuonBuilder.cc,v 1.16.2.1 2010/02/23 13:46:12 yana Exp $
 //
 
 // system include files
@@ -68,7 +68,6 @@ void addMatchInformation( const reco::Muon* muon,
    const std::vector<reco::MuonChamberMatch>& matches = muon->matches();
    //need to use auto_ptr since the segmentSet may not be passed to muonList
    std::auto_ptr<TEveStraightLineSet> segmentSet(new TEveStraightLineSet);
-   segmentSet->SetLineWidth(4);
    segmentSet->SetMainColor(iItem->defaultDisplayProperties().color());
    std::vector<reco::MuonChamberMatch>::const_iterator chamber = matches.begin();
    for ( ; chamber != matches.end(); ++chamber )
@@ -230,7 +229,6 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
                                                iItem->defaultDisplayProperties().color(),
                                                getRecoTrajectoryPoints(muon,iItem) );
       trk->MakeTrack();
-      trk->SetLineWidth(3);
       tList->AddElement( trk );
       if ( ! tracksOnly )
 	 addMatchInformation( &(*muon), iItem, tList, showEndcap );
@@ -262,7 +260,6 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
                                                iItem->defaultDisplayProperties().color(),
                                                extraPoints);
       trk->MakeTrack();
-      trk->SetLineWidth(3);
       tList->AddElement( trk );
       return;
    }
@@ -273,7 +270,6 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
                                                m_trackerPropagator.get(),
                                                iItem->defaultDisplayProperties().color());
       trk->MakeTrack();
-      trk->SetLineWidth(3);
       tList->AddElement( trk );
       return;
    }
@@ -284,7 +280,6 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
                                                m_trackerPropagator.get(),
                                                iItem->defaultDisplayProperties().color());
       trk->MakeTrack();
-      trk->SetLineWidth(3);
       tList->AddElement( trk );
       return;
    }
@@ -295,6 +290,5 @@ FWMuonBuilder::buildMuon(const FWEventItem* iItem,
 					    m_trackerPropagator.get(),
 					    iItem->defaultDisplayProperties().color());
    trk->MakeTrack();
-   trk->SetLineWidth(3);
    tList->AddElement( trk );
 }

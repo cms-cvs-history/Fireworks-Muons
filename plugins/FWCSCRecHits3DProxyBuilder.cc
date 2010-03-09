@@ -55,7 +55,6 @@ FWCSCRecHits3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** pr
    compund->OpenCompound();
    
    TEveStraightLineSet* rechitSet = new TEveStraightLineSet("CSC RecHit2D Collection");
-   rechitSet->SetLineWidth(3);
    rechitSet->SetMainColor(iItem->defaultDisplayProperties().color());
    rechitSet->SetRnrSelf(iItem->defaultDisplayProperties().isVisible());
    rechitSet->SetRnrChildren(iItem->defaultDisplayProperties().isVisible());

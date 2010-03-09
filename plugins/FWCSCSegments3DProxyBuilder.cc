@@ -8,7 +8,7 @@
 //
 // Original Author:
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCSegments3DProxyBuilder.cc,v 1.1 2009/05/14 Yanjun Tu Exp $
+// $Id: FWCSCSegments3DProxyBuilder.cc,v 1.1 2009/05/14 20:29:26 yanjuntu Exp $
 //
 
 // system include files
@@ -17,7 +17,6 @@
 #include "TEveGeoNode.h"
 #include "TEveElement.h"
 #include "TEveCompound.h"
-#include "TEvePointSet.h"
 
 // user include files
 #include "Fireworks/Core/interface/FW3DDataProxyBuilder.h"
@@ -103,14 +102,10 @@ FWCSCSegments3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** p
       std::stringstream s;
       s << "chamber" << index;
       TEveStraightLineSet* segmentSet = new TEveStraightLineSet(s.str().c_str());
-      TEvePointSet* pointSet = new TEvePointSet();
-      segmentSet->SetLineWidth(3);
       segmentSet->SetMainColor(iItem->defaultDisplayProperties().color());
       segmentSet->SetRnrSelf(iItem->defaultDisplayProperties().isVisible());
       segmentSet->SetRnrChildren(iItem->defaultDisplayProperties().isVisible());
-      pointSet->SetMainColor(iItem->defaultDisplayProperties().color());
       compund->AddElement( segmentSet);
-      segmentSet->AddElement( pointSet );
 
       CSCSegmentCollection::range range = segments->get(*chamberId);
       const double segmentLength = 15;
