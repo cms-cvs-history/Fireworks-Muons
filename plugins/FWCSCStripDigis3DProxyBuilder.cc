@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCStripDigis3DProxyBuilder.cc,v 1.1.2.1 2010/03/02 13:12:41 mccauley Exp $
+// $Id: FWCSCStripDigis3DProxyBuilder.cc,v 1.1.2.2 2010/03/02 15:08:37 mccauley Exp $
 //
 
 #include "TEveManager.h"
@@ -25,6 +25,7 @@
 #include "Fireworks/Core/interface/FWEveScalableStraightLineSet.h"
 #include "Fireworks/Core/interface/FWEveValueScaler.h"
 #include "Fireworks/Core/interface/DetIdToMatrix.h"
+#include "Fireworks/Core/src/changeElementAndChildren.h"
 
 #include "DataFormats/CSCDigi/interface/CSCStripDigiCollection.h"
 
@@ -36,9 +37,7 @@ public:
   REGISTER_PROXYBUILDER_METHODS();
 
 private:
-  virtual void build(const FWEventItem* iItem,
-                     TEveElementList** product);
-
+  virtual void build(const FWEventItem* iItem, TEveElementList** product);
   FWCSCStripDigis3DProxyBuilder(const FWCSCStripDigis3DProxyBuilder&);
   const FWCSCStripDigis3DProxyBuilder& operator=(const FWCSCStripDigis3DProxyBuilder&);
 };
@@ -86,9 +85,9 @@ FWCSCStripDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList**
     const CSCDetId& cscDetId = (*dri).first;
     const CSCStripDigiCollection::Range& range = (*dri).second;
 
-    /*
     const TGeoHMatrix* matrix = iItem->getGeom()->getMatrix(cscDetId.rawId());
     
+    /*
     if ( ! matrix )
     {
       std::cout<<"ERROR: Failed to get geometry of CSC chamber with detid: "
@@ -105,15 +104,15 @@ FWCSCStripDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList**
     {
       CSCDetId id = cscDetId;
       std::vector<int> adcCounts = (*dit).getADCCounts();
+      
+      TEveCompound* compound = new TEveCompound("csc strip digi compound", "cscStripDigis");
+      compound->OpenCompound();
+      tList->AddElement(compound);
 
       int signalThreshold = (adcCounts[0] + adcCounts[1])/2 + thresholdOffset;  
             
       if ( std::find_if(adcCounts.begin(),adcCounts.end(),bind2nd(std::greater<int>(),signalThreshold)) != adcCounts.end() ) 
       {
-        TEveCompound* compound = new TEveCompound("csc strip digi compound", "cscStripDigis");
-        compound->OpenCompound();
-        tList->AddElement(compound);
-
         TEveStraightLineSet* stripDigiSet = new TEveStraightLineSet(s.str().c_str());
         stripDigiSet->SetLineWidth(3);
         stripDigiSet->SetMainColor(iItem->defaultDisplayProperties().color());
@@ -127,10 +126,12 @@ FWCSCStripDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList**
         int ring    = id.ring();
         int chamber = id.chamber();
 
+        /*
         std::cout<<"stripId, endcap, station, ring. chamber: "
                  << stripId <<" "<< endcap <<" "<< station <<" "
                  << ring <<" "<< chamber <<std::endl;
-        
+        */
+
         /*
           We need the x position of the strip to create 
           a local position: (xStrip(stripId), 0.0, 0.1)
@@ -143,19 +144,9 @@ FWCSCStripDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList**
       
           and a "box" is drawn with the width, length, and depth given above
         */
-      }
-      
-    }
-          
-  }
-  
-
-
-
-
-
- 
-  
+      } 
+    }       
+  }   
 }
 
 REGISTER_FW3DDATAPROXYBUILDER(FWCSCStripDigis3DProxyBuilder, CSCStripDigiCollection,"CSC-stripDigis");

@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCWireDigis3DProxyBuilder.cc,v 1.1.2.1 2010/03/02 13:12:41 mccauley Exp $
+// $Id: FWCSCWireDigis3DProxyBuilder.cc,v 1.1.2.2 2010/03/02 15:08:37 mccauley Exp $
 //
 
 #include "TEveManager.h"
@@ -25,6 +25,7 @@
 #include "Fireworks/Core/interface/FWEveScalableStraightLineSet.h"
 #include "Fireworks/Core/interface/FWEveValueScaler.h"
 #include "Fireworks/Core/interface/DetIdToMatrix.h"
+#include "Fireworks/Core/src/changeElementAndChildren.h"
 
 #include "DataFormats/CSCDigi/interface/CSCWireDigiCollection.h"
 
@@ -36,9 +37,7 @@ public:
   REGISTER_PROXYBUILDER_METHODS();
 
 private:
-  virtual void build(const FWEventItem* iItem,
-                     TEveElementList** product);
-
+  virtual void build(const FWEventItem* iItem, TEveElementList** product);
   FWCSCWireDigis3DProxyBuilder(const FWCSCWireDigis3DProxyBuilder&);
   const FWCSCWireDigis3DProxyBuilder& operator=(const FWCSCWireDigis3DProxyBuilder&);
 };
@@ -80,13 +79,13 @@ FWCSCWireDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** 
 
   // Test iteration over digis
   for( CSCWireDigiCollection::DigiRangeIterator dri = digis->begin(), driEnd = digis->end(); dri != driEnd; ++dri, ++index )
-  {  
+  { 
     const CSCDetId& cscDetId = (*dri).first;
     const CSCWireDigiCollection::Range& range = (*dri).second;
  
-    /*
     const TGeoHMatrix* matrix = iItem->getGeom()->getMatrix(cscDetId.rawId());
     
+    /*
     if ( ! matrix )
     {
       std::cout<<"ERROR: Failed to get geometry of CSC chamber with detid: "
@@ -94,7 +93,7 @@ FWCSCWireDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** 
       continue;
     }
     */
-    
+       
     std::stringstream s;
     s << "wire "<< index;
 
@@ -119,10 +118,11 @@ FWCSCWireDigis3DProxyBuilder::build(const FWEventItem* iItem, TEveElementList** 
       int ring    = id.ring();
       int chamber = id.chamber();
 
+      /*
       std::cout<<"wireGroup, endcap, station, ring. chamber: "
                << wireGroup <<" "<< endcap <<" "<< station <<" "
                << ring <<" "<< chamber <<std::endl;
-
+      */
       /*
         We need the local center of the wire group
         and then a conversion to global coordinates.
