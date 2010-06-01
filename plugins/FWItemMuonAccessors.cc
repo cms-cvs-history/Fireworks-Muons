@@ -8,7 +8,7 @@
 //
 // Original Author:  Giulio Eulisse
 //         Created:  Thu Feb 18 15:19:44 EDT 2008
-// $Id: FWItemMuonAccessors.cc,v 1.4.2.2 2010/06/01 09:37:27 mccauley Exp $
+// $Id: FWItemMuonAccessors.cc,v 1.4.2.3 2010/06/01 09:56:00 mccauley Exp $
 //
 
 // system include files
@@ -42,3 +42,11 @@ REGISTER_TEMPLATE_FWITEMACCESSOR(FWItemRandomAccessor<DTRecSegment4DCollection>,
 REGISTER_TEMPLATE_FWITEMACCESSOR(FWItemRandomAccessor<DTRecHitCollection>,DTRecHitCollection,"DTRecHitCollectionAccessor");
 REGISTER_TEMPLATE_FWITEMACCESSOR(FWItemRandomAccessor<RPCRecHitCollection>,RPCRecHitCollection,"RPCRecHitCollectionAccessor");
 
+typedef FWItemMuonDigiAccessor<DTDigiCollection,DTDigi> DTDigiAccessor;
+REGISTER_TEMPLATE_FWITEMACCESSOR(DTDigiAccessor, DTDigiCollection, "DTDigiCollectionAccessor");
+
+typedef FWItemMuonDigiAccessor<CSCWireDigiCollection, CSCWireDigi> CSCWireDigiAccessor;
+REGISTER_TEMPLATE_FWITEMACCESSOR(CSCWireDigiAccessor, CSCWireDigiCollection, "CSCWireDigiCollectionAccessor");
+
+typedef FWItemMuonDigiAccessor<CSCStripDigiCollection, CSCStripDigi> CSCStripDigiAccessor;
+REGISTER_TEMPLATE_FWITEMACCESSOR(CSCStripDigiAccessor, CSCStripDigiCollection, "CSCStripDigiCollectionAccessor");
