@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCWireDigiProxyBuilder.cc,v 1.1 2010/05/28 14:01:45 mccauley Exp $
+// $Id: FWCSCWireDigiProxyBuilder.cc,v 1.1.2.2 2010/05/28 14:09:00 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -21,6 +21,8 @@
 #include "Fireworks/Core/interface/fwLog.h"
 
 #include "DataFormats/CSCDigi/interface/CSCWireDigiCollection.h"
+
+#include <cmath>
 
 class FWCSCWireDigiProxyBuilder : public FWProxyBuilderBase
 {

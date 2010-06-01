@@ -8,7 +8,7 @@
 //
 // Original Author:  Giulio Eulisse
 //         Created:  Thu Feb 18 15:19:44 EDT 2008
-// $Id: FWItemMuonAccessors.cc,v 1.4.2.1 2010/05/28 14:09:00 mccauley Exp $
+// $Id: FWItemMuonAccessors.cc,v 1.4.2.2 2010/06/01 09:37:27 mccauley Exp $
 //
 
 // system include files
@@ -29,7 +29,9 @@
 #include "DataFormats/DTDigi/interface/DTDigiCollection.h"
 #include "DataFormats/CSCDigi/interface/CSCWireDigiCollection.h"
 #include "DataFormats/CSCDigi/interface/CSCStripDigiCollection.h"
-#include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
+
+// This is not included in stand-alone tarball cms/DataFormats
+//#include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
 
 #include "Fireworks/Core/interface/FWItemRandomAccessor.h"
 
