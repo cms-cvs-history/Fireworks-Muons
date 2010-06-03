@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWRPCDigiProxyBuilder.cc,v 1.1.2.2 2010/05/28 14:09:00 mccauley Exp $
+// $Id: FWRPCDigiProxyBuilder.cc,v 1.1.2.3 2010/06/01 09:56:00 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -20,8 +20,7 @@
 #include "Fireworks/Core/interface/DetIdToMatrix.h"
 #include "Fireworks/Core/interface/fwLog.h"
 
-// This is not included in stand-alone tarball cms/DataFormats
-//#include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
+#include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
 
 class FWRPCDigiProxyBuilder : public FWProxyBuilderBase
 {
@@ -40,7 +39,6 @@ private:
 void
 FWRPCDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* product, const FWViewContext*)
 {
-  /*
   const RPCDigiCollection* digis = 0;
  
   iItem->get(digis);
@@ -50,8 +48,7 @@ FWRPCDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* product,
     fwLog(fwlog::kWarning)<<"Failed to get RPCDigis"<<std::endl;
     return;
   }
-  */
 }
 
-//REGISTER_FWPROXYBUILDER(FWRPCDigiProxyBuilder, RPCDigiCollection, "RPCDigi", FWViewType::kISpyBit);
+REGISTER_FWPROXYBUILDER(FWRPCDigiProxyBuilder, RPCDigiCollection, "RPCDigi", FWViewType::kISpyBit);
 

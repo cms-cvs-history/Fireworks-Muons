@@ -8,7 +8,7 @@
 //
 // Original Author:  Giulio Eulisse
 //         Created:  Thu Feb 18 15:19:44 EDT 2008
-// $Id: FWItemMuonAccessors.cc,v 1.4.2.3 2010/06/01 09:56:00 mccauley Exp $
+// $Id: FWItemMuonAccessors.cc,v 1.4.2.4 2010/06/01 10:41:32 mccauley Exp $
 //
 
 // system include files
@@ -29,9 +29,7 @@
 #include "DataFormats/DTDigi/interface/DTDigiCollection.h"
 #include "DataFormats/CSCDigi/interface/CSCWireDigiCollection.h"
 #include "DataFormats/CSCDigi/interface/CSCStripDigiCollection.h"
-
-// This is not included in stand-alone tarball cms/DataFormats
-//#include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
+#include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
 
 #include "Fireworks/Core/interface/FWItemRandomAccessor.h"
 
@@ -50,3 +48,6 @@ REGISTER_TEMPLATE_FWITEMACCESSOR(CSCWireDigiAccessor, CSCWireDigiCollection, "CS
 
 typedef FWItemMuonDigiAccessor<CSCStripDigiCollection, CSCStripDigi> CSCStripDigiAccessor;
 REGISTER_TEMPLATE_FWITEMACCESSOR(CSCStripDigiAccessor, CSCStripDigiCollection, "CSCStripDigiCollectionAccessor");
+
+typedef FWItemMuonDigiAccessor<RPCDigiCollection, RPCDigi> RPCDigiAccessor;
+REGISTER_TEMPLATE_FWITEMACCESSOR(RPCDigiAccessor, RPCDigiCollection, "RPCDigiCollectionAccessor");
