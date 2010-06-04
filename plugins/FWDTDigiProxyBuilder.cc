@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWDTDigiProxyBuilder.cc,v 1.1 2010/05/28 14:01:45 mccauley Exp $
+// $Id: FWDTDigiProxyBuilder.cc,v 1.1.2.2 2010/05/28 14:09:00 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -55,6 +55,13 @@ FWDTDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* product, 
     const DTLayerId& dtLayerId = (*dri).first;
     const DTDigiCollection::Range& range = (*dri).second; 
 
+    // These are probably best left for the table view
+    int layerId = dtLayerId.layer();
+    int superLayerId = dtLayerId.superlayerId().superLayer();
+    int sectorId = dtLayerId.superlayerId().chamberId().sector();
+    int stationId = dtLayerId.superlayerId().chamberId().station();
+    int wheelId = dtLayerId.superlayerId().chamberId().wheel();
+
     for ( DTDigiCollection::const_iterator dit = range.first;
           dit != range.second; ++dit )        
     { 
@@ -68,13 +75,6 @@ FWDTDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* product, 
     
       int wireNumber = (*dit).wire();
       int countsTDC = (*dit).countsTDC();
-
-      // These are probably best left for the table view
-      int layerId = dtLayerId.layer();
-      int superLayerId = dtLayerId.superlayerId().superLayer();
-      int sectorId = dtLayerId.superlayerId().chamberId().sector();
-      int stationId = dtLayerId.superlayerId().chamberId().station();
-      int wheelId = dtLayerId.superlayerId().chamberId().wheel();
 
       /*
         We need the x position of the wire in the DT frame to create a point 

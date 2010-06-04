@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWRPCDigiProxyBuilder.cc,v 1.1.2.3 2010/06/01 09:56:00 mccauley Exp $
+// $Id: FWRPCDigiProxyBuilder.cc,v 1.1.2.4 2010/06/03 13:35:39 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -47,6 +47,42 @@ FWRPCDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* product,
   {
     fwLog(fwlog::kWarning)<<"Failed to get RPCDigis"<<std::endl;
     return;
+  }
+
+  //std::cout<<"Got RPC digis"<<std::endl;
+
+  for ( RPCDigiCollection::DigiRangeIterator dri = digis->begin(), driEnd = digis->end();
+        dri != driEnd; ++dri )
+  {
+    const RPCDetId& rpcDetId = (*dri).first;
+    const RPCDigiCollection::Range& range = (*dri).second;
+
+    /*
+    std::cout<<"RPCDetId: "<< rpcDetId <<std::endl;
+       
+    int region = rpcDetId.region();
+    int ring   = rpcDetId.ring();
+    int station = rpcDetId.station();
+    int sector = rpcDetId.station();
+    int layer = rpcDetId.layer();
+    int subsector = rpcDetId.subsector();
+    int roll = rpcDetId.roll();
+    */
+
+    for ( RPCDigiCollection::const_iterator dit = range.first;
+          dit != range.second; ++dit )
+    {
+      TEveCompound* compound = new TEveCompound("dt digi compound", "dtDigis");
+      compound->OpenCompound();
+      product->AddElement(compound);
+
+      /*
+      int strip = (*dit).strip();
+      int bx = (*dit).bx(); 
+
+      std::cout<<"strip, bx: "<< strip <<" "<< bx <<std::endl;
+      */
+    }
   }
 }
 
