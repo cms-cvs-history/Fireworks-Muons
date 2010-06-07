@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWRPCDigiProxyBuilder.cc,v 1.1.2.5 2010/06/04 10:44:59 mccauley Exp $
+// $Id: FWRPCDigiProxyBuilder.cc,v 1.1.2.6 2010/06/07 15:50:15 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -82,7 +82,7 @@ FWRPCDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* product,
     for ( RPCDigiCollection::const_iterator dit = range.first;
           dit != range.second; ++dit )
     {
-      TEveCompound* compound = new TEveCompound("dt digi compound", "dtDigis");
+      TEveCompound* compound = new TEveCompound("rpc digi compound", "rpcDigis");
       compound->OpenCompound();
       product->AddElement(compound);
 
