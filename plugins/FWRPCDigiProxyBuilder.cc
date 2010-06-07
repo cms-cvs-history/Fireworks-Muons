@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWRPCDigiProxyBuilder.cc,v 1.1.2.4 2010/06/03 13:35:39 mccauley Exp $
+// $Id: FWRPCDigiProxyBuilder.cc,v 1.1.2.5 2010/06/04 10:44:59 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -55,6 +55,16 @@ FWRPCDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* product,
         dri != driEnd; ++dri )
   {
     const RPCDetId& rpcDetId = (*dri).first;
+
+    const TGeoHMatrix* matrix = iItem->getGeom()->getMatrix(rpcDetId);
+  
+    if ( ! matrix ) 
+    {
+      std::cout << "ERROR: failed get geometry of RPC reference volume with detid: "
+                << rpcDetId << std::endl;
+      return;
+    }     
+
     const RPCDigiCollection::Range& range = (*dri).second;
 
     /*
