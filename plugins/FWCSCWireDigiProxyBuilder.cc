@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCWireDigiProxyBuilder.cc,v 1.1.2.2 2010/05/28 14:09:00 mccauley Exp $
+// $Id: FWCSCWireDigiProxyBuilder.cc,v 1.1.2.3 2010/06/01 09:56:00 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -52,10 +52,6 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
     return;
   }
 
-  double width  = 0.02;
-  double depth  = 0.01;
-  double rotate = M_PI*0.5;
-
   for ( CSCWireDigiCollection::DigiRangeIterator dri = digis->begin(), driEnd = digis->end(); 
         dri != driEnd; ++dri )
   { 
@@ -83,27 +79,102 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
       compound->AddElement(wireDigiSet);
 
       int wireGroup = (*dit).getWireGroup();
+
       int endcap  = cscDetId.endcap();
       int station = cscDetId.station();
       int ring    = cscDetId.ring();
       int chamber = cscDetId.chamber();
 
+
       /*
-      std::cout<<"wireGroup, endcap, station, ring. chamber: "
-               << wireGroup <<" "<< endcap <<" "<< station <<" "
-               << ring <<" "<< chamber <<std::endl;
+        Note:
+
+        These number are fetched from cscSpecs.xml
+        We should think carefully about the interface when full
+        framework is available
       */
-      /*
-        We need the local center of the wire group
-        and then a conversion to global coordinates.
-        In addition, we also need the length of the wire group
-        
-        The wire digi is rotated about the z axis by an angle:
-        
-        double angle = -atan2(pos.x(),pos.y()) - rotate;
+
+      if ( station == 1 && ring == 4 )
+      {
+        fwLog(fwlog::kWarning)<<"ME1a not handled yet"<<std::endl;
+        continue;
+      }
       
-        and a "box" is drawn with the width, length, and depth given above
+      double wireSpacing;
+
+      if ( ring == 1 )
+      {
+        if ( station == 1 )
+          wireSpacing = 2.5; // mm
+        else 
+          wireSpacing = 3.12; // mm
+      }
+      
+      else
+        wireSpacing = 3.16; // mm 
+      
+
+      double alignmentPinToFirstWire;
+
+      if ( station == 1 && ring == 1 )
+        alignmentPinToFirstWire = 10.65; // mm
+      else
+        alignmentPinToFirstWire = 29.0; // mm
+
+
+      double yAlignmentFrame;
+
+      if ( station == 1 && ring == 1 )
+        yAlignmentFrame = 0.0; // cm
+      else 
+        yAlignmentFrame = 3.49; // cm
+
+      
+      double yOfFirstWire = yAlignmentFrame*10.0 + alignmentPinToFirstWire;
+      
+      // Wires are only ganged in ME1a? If so, then this should work all expect
+      // that chamber.
+
+      double yOfWire = yOfFirstWire + (wireGroup-1)*wireSpacing;
+      
+
+      /*
+        Note:
+        
+        Length of the wire group can in principle be calculated as we know
+        the trapezoid length and width at the top and bottom. In fact, it is 
+        calculated in CSCWireGeometry.cc
+        Come back to this later. For now, make it a constant length for testing.
       */
+
+      double lengthOfWireGroup = 100.0;
+
+      double localPointLeft[3] =
+      {
+        -lengthOfWireGroup*0.5, yOfWire, 0.0
+      };
+      
+      double localPointCenter[3] = 
+      {
+        0.0, yOfWire, 0.0
+      };
+
+      double localPointRight[3] = 
+      {
+        lengthOfWireGroup*0.5, yOfWire, 0.0
+      };
+
+      double globalPointLeft[3];
+      double globalPointCenter[3];
+      double globalPointRight[3];
+
+      matrix->LocalToMaster(localPointLeft,   globalPointLeft);
+      matrix->LocalToMaster(localPointCenter, globalPointCenter);
+      matrix->LocalToMaster(localPointRight,  globalPointRight);
+
+      wireDigiSet->AddLine(globalPointLeft[0],  globalPointLeft[1],  globalPointLeft[2],
+                           globalPointRight[0], globalPointRight[1], globalPointRight[2]);
+
     }
   }
 }
