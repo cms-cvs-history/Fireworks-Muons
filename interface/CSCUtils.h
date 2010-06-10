@@ -4,6 +4,9 @@
 namespace fireworks
 {
   void fillCSCChamberParameters(int station, int ring, double& length, double& thickness);
+
+  void testFill(const int station, const int ring, double* params);
+
 }
 
 #endif

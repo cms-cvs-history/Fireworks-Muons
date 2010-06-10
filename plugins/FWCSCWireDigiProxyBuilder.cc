@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCWireDigiProxyBuilder.cc,v 1.1.2.3 2010/06/01 09:56:00 mccauley Exp $
+// $Id: FWCSCWireDigiProxyBuilder.cc,v 1.1.2.4 2010/06/09 17:33:42 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -19,6 +19,8 @@
 #include "Fireworks/Core/interface/FWEventItem.h"
 #include "Fireworks/Core/interface/DetIdToMatrix.h"
 #include "Fireworks/Core/interface/fwLog.h"
+
+#include "Fireworks/Muons/interface/CSCUtils.h"
 
 #include "DataFormats/CSCDigi/interface/CSCWireDigiCollection.h"
 
@@ -80,11 +82,8 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
 
       int wireGroup = (*dit).getWireGroup();
 
-      int endcap  = cscDetId.endcap();
       int station = cscDetId.station();
       int ring    = cscDetId.ring();
-      int chamber = cscDetId.chamber();
-
 
       /*
         Note:
@@ -99,7 +98,11 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
         fwLog(fwlog::kWarning)<<"ME1a not handled yet"<<std::endl;
         continue;
       }
+
+      double params[4];
       
+      fireworks::testFill(station, ring, params);
+
       double wireSpacing;
 
       if ( ring == 1 )
@@ -132,12 +135,11 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
       
       double yOfFirstWire = yAlignmentFrame*10.0 + alignmentPinToFirstWire;
       
-      // Wires are only ganged in ME1a? If so, then this should work all expect
-      // that chamber.
+      // Wires are only ganged in ME1a? 
+      // If so, then this should work with all except that chamber.
 
       double yOfWire = yOfFirstWire + (wireGroup-1)*wireSpacing;
       
-
       /*
         Note:
         
@@ -147,7 +149,12 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
         Come back to this later. For now, make it a constant length for testing.
       */
 
-      double lengthOfWireGroup = 100.0;
+      double length = params[0];
+      double bottomWidth = params[2];
+      double topWidth = params[3];
+      
+      double lengthOfWireGroup = (topWidth - bottomWidth)*0.5 / length;
+      lengthOfWireGroup *= yOfWire;
 
       double localPointLeft[3] =
       {
