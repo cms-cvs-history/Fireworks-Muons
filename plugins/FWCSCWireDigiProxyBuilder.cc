@@ -8,7 +8,7 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCWireDigiProxyBuilder.cc,v 1.1.2.4 2010/06/09 17:33:42 mccauley Exp $
+// $Id: FWCSCWireDigiProxyBuilder.cc,v 1.1.2.5 2010/06/10 09:52:45 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
@@ -88,9 +88,10 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
       /*
         Note:
 
-        These number are fetched from cscSpecs.xml
+        These numbers are fetched from cscSpecs.xml
         We should think carefully about the interface when full
-        framework is available
+        framework is available.
+        It seems that they DO NOT come from DDD.
       */
 
       if ( station == 1 && ring == 4 )
@@ -155,6 +156,7 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
       
       double lengthOfWireGroup = (topWidth - bottomWidth)*0.5 / length;
       lengthOfWireGroup *= yOfWire;
+      yOfWire -= length;
 
       double localPointLeft[3] =
       {
@@ -175,6 +177,12 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
       double globalPointCenter[3];
       double globalPointRight[3];
 
+      /*
+      std::cout<<"CSC wire digi: "
+                 << globalPointCenter[0] <<" "<< globalPointCenter[1] <<" "<< globalPointCenter[2] 
+                 <<std::endl;
+      */
+
       matrix->LocalToMaster(localPointLeft,   globalPointLeft);
       matrix->LocalToMaster(localPointCenter, globalPointCenter);
       matrix->LocalToMaster(localPointRight,  globalPointRight);
@@ -186,6 +194,6 @@ FWCSCWireDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* prod
   }
 }
 
-REGISTER_FWPROXYBUILDER(FWCSCWireDigiProxyBuilder, CSCWireDigiCollection, "CSCWireDigi", FWViewType::kISpyBit);
+REGISTER_FWPROXYBUILDER(FWCSCWireDigiProxyBuilder, CSCWireDigiCollection, "CSCWireDigi", FWViewType::kAll3DBits);
 
 

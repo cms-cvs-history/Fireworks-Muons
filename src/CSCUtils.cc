@@ -104,6 +104,8 @@ namespace fireworks
         params[1] = 15.875;
         params[2] = 63.4;
         params[3] = 92.1;
+
+        return;
       }
       
       if ( ring == 4 )
@@ -112,6 +114,8 @@ namespace fireworks
         params[1] = 15.0;
         params[2] = 20.13;
         params[3] = 48.71;
+
+        return;
       }
       
       else 
@@ -126,6 +130,8 @@ namespace fireworks
         params[1] = 15.875;
         params[2] = 54.0;
         params[3] = 125.71;
+
+        return;
       }
       
       if ( ring == 2 )
@@ -134,6 +140,8 @@ namespace fireworks
         params[1] = 15.875;
         params[2] = 66.46;
         params[3] = 127.15;
+        
+        return;
       }
       
       else 
@@ -148,6 +156,8 @@ namespace fireworks
         params[1] = 15.875;
         params[2] = 61.4;
         params[3] = 125.71;
+
+        return;
       }
       
       if ( ring == 2 )
@@ -156,6 +166,8 @@ namespace fireworks
         params[1] = 15.875;
         params[2] = 66.46;
         params[3] = 127.15;
+
+        return;
       }
       
       else 
@@ -170,6 +182,8 @@ namespace fireworks
         params[1] = 15.875;
         params[2] = 69.01;
         params[3] = 125.65;
+
+        return;
       }
       
       if ( ring == 2 )
@@ -178,6 +192,8 @@ namespace fireworks
         params[1] = 15.875;
         params[2] = 66.46;
         params[3] = 127.15;
+
+        return;
       }
       
       else 

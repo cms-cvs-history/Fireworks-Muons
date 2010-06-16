@@ -8,10 +8,12 @@
 //
 // Original Author: mccauley
 //         Created:  Sun Jan  6 23:57:00 EST 2008
-// $Id: FWCSCStripDigiProxyBuilder.cc,v 1.1 2010/05/28 14:01:45 mccauley Exp $
+// $Id: FWCSCStripDigiProxyBuilder.cc,v 1.1.2.2 2010/05/28 14:08:59 mccauley Exp $
 //
 
 #include "TEveStraightLineSet.h"
+#include "TEvePointSet.h"
+
 #include "TEveGeoNode.h"
 #include "TEveCompound.h"
 
@@ -34,7 +36,112 @@ private:
   virtual void build(const FWEventItem* iItem, TEveElementList* product, const FWViewContext*);
   FWCSCStripDigiProxyBuilder(const FWCSCStripDigiProxyBuilder&);    
   const FWCSCStripDigiProxyBuilder& operator=(const FWCSCStripDigiProxyBuilder&);
+
+  void fillParams(int station, int ring, double* params); // this is a temp. test method
 };
+
+// This is for testing and should be moved to CSCUtils
+
+void 
+FWCSCStripDigiProxyBuilder::fillParams(const int station, const int ring, double* params)
+{
+  if ( station == 1 )
+  {
+    if ( ring == 1 )
+    {
+      params[0] = 2.96;
+          
+      return;
+    }
+      
+    if ( ring == 2 )
+    { 
+      params[0] = 2.33;
+      
+      return;
+    }
+      
+    if ( ring == 3 )
+    {
+      params[0] = 2.15;
+
+      return;
+    }
+      
+    if ( ring == 4 )
+    {
+      params[0] = 2.96;
+    
+      return;
+    }
+      
+    else 
+      return;
+  }
+    
+  if ( station == 2 )
+  {
+    if ( ring == 1 )
+    {
+      params[0] = 4.65;
+      
+      return;
+    }
+    
+    if ( ring == 2 )
+    {
+      params[0] = 2.33;
+    
+      return;
+    }
+      
+    else 
+      return;
+  }
+    
+  if ( station == 3 )
+  {
+    if ( ring == 1 )
+    {
+      params[0] = 4.65;
+      
+      return;
+    }
+      
+    if ( ring == 2 )
+    {
+      params[0] = 2.33;
+      
+      return;
+    }
+      
+    else 
+      return;
+  }
+    
+  if ( station == 4 )
+  {
+    if ( ring == 1 )
+    {
+      params[0] = 4.65;
+     
+      return;
+    }
+      
+    if ( ring == 2 )
+    {
+      params[0] = 2.33;
+      
+      return;
+    }
+      
+    else 
+      return;
+  }
+    
+  else
+    return;
+}
 
 
 void
@@ -87,34 +194,59 @@ FWCSCStripDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* pro
         stripDigiSet->SetLineWidth(3);
         compound->AddElement(stripDigiSet);
 
+        TEvePointSet* testPointSet = new TEvePointSet();
+        compound->AddElement(testPointSet);
+
         int stripId = (*dit).getStrip();  
-        int endcap  = cscDetId.endcap();
+
         int station = cscDetId.station();
         int ring    = cscDetId.ring();
-        int chamber = cscDetId.chamber();
 
-        /*
-        std::cout<<"stripId, endcap, station, ring. chamber: "
-                 << stripId <<" "<< endcap <<" "<< station <<" "
-                 << ring <<" "<< chamber <<std::endl;
-        */
+        double params[1];
+        fillParams(station, ring, params);
 
-        /*
-          We need the x position of the strip to create 
-          a local position: (xStrip(stripId), 0.0, 0.1)
-          and then a conversion to global coordinates.
-          We also need the length of the strip.
-          
-          The strip digi is rotated about the z axis by an angle:
-        
-          double angle = -atan2(pos.x(),pos.y()) - rotate;
+        double angularWidth = params[0]/1000.0;
+        double length = 150.0; // magic number for testing
+
+        double stripAngle = stripId*angularWidth;
+        double xOfStrip = tan(stripAngle - 0.5);
+
+        double localPointTop[3] =
+          {
+            xOfStrip, length*0.5, 0.0
+          };
+
+        double localPointCenter[3] = 
+          {
+            xOfStrip, 0.0, 0.0
+          };
+
+        double localPointBottom[3] = 
+          {
+            xOfStrip, -length*0.5, 0.0
+          };
       
-          and a "box" is drawn with the width, length, and depth given above
+        double globalPointTop[3];
+        double globalPointCenter[3];
+        double globalPointBottom[3];
+
+        matrix->LocalToMaster(localPointTop, globalPointTop);
+        matrix->LocalToMaster(localPointCenter, globalPointCenter);
+        matrix->LocalToMaster(localPointBottom, globalPointBottom);
+
+        /*
+        std::cout<<"CSC strip digi: "
+                 << globalPointCenter[0] <<" "<< globalPointCenter[1] <<" "<< globalPointCenter[2] 
+                 <<std::endl;
         */
+  
+        stripDigiSet->AddLine(globalPointTop[0],  globalPointTop[1],  globalPointTop[2],
+                              globalPointBottom[0], globalPointBottom[1], globalPointBottom[2]);
+
       } 
     }       
   }   
 }
 
-REGISTER_FWPROXYBUILDER(FWCSCStripDigiProxyBuilder, CSCStripDigiCollection, "CSCStripDigi", FWViewType::kISpyBit);
+REGISTER_FWPROXYBUILDER(FWCSCStripDigiProxyBuilder, CSCStripDigiCollection, "CSCStripDigi", FWViewType::kAll3DBits);
 
