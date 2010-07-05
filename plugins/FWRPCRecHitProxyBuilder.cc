@@ -6,7 +6,7 @@
 //
 // Original Author:
 //         Created:  Sun Jan  6 23:42:33 EST 2008
-// $Id: FWRPCRecHitProxyBuilder.cc,v 1.6 2010/05/05 08:35:08 mccauley Exp $
+// $Id: FWRPCRecHitProxyBuilder.cc,v 1.10 2010/07/02 11:37:40 mccauley Exp $
 //
 
 #include "TEveGeoNode.h"
@@ -15,6 +15,7 @@
 #include "Fireworks/Core/interface/FWSimpleProxyBuilderTemplate.h"
 #include "Fireworks/Core/interface/FWEventItem.h"
 #include "Fireworks/Core/interface/DetIdToMatrix.h"
+#include "Fireworks/Core/interface/fwLog.h"
 
 #include "DataFormats/RPCRecHit/interface/RPCRecHitCollection.h"
 
@@ -71,8 +72,8 @@ FWRPCRecHitProxyBuilder::build(const RPCRecHit& iData,
   
   if ( ! matrix ) 
   {
-    std::cout << "ERROR: failed get geometry of RPC reference volume with detid: "
-              << rpcId << std::endl;
+    fwLog(fwlog::kError) <<"failed to get geometry of RPC reference volume with detid: "
+                         << rpcId << std::endl;
     return;
   }
  
@@ -82,6 +83,10 @@ FWRPCRecHitProxyBuilder::build(const RPCRecHit& iData,
   TEveStraightLineSet* recHitSet = new TEveStraightLineSet(s.str().c_str());
   recHitSet->SetLineWidth(3);
 
+  /*
+
+  NOTE: Do not draw shape until geometry bug is fixed.
+
   TEveGeoShape* shape = item()->getGeom()->getShape(rpcId);
 
   if ( shape && ( type == FWViewType::k3D || type == FWViewType::kISpy ) ) 
@@ -90,6 +95,7 @@ FWRPCRecHitProxyBuilder::build(const RPCRecHit& iData,
     shape->SetMainColor(item()->defaultDisplayProperties().color());
     recHitSet->AddElement(shape);
   }
+  */
 
   double localX = iData.localPosition().x();
   double localY = iData.localPosition().y();
